@@ -33,42 +33,55 @@ class MissedCall {
 }
 
 class Phone {
-    private List<MissedCall> missedCalls;
+    private LinkedList<MissedCall> missedCalls;
 
     public Phone() {
         missedCalls = new LinkedList<>();
     }
 
     public void addMissedCall(String phoneNumber, String callerName) {
-        if (missedCalls.size() == 10) {
-            missedCalls.remove(0); // Remove the oldest call
-        }
         missedCalls.add(new MissedCall(phoneNumber, callerName, new Date()));
     }
 
     public void displayMissedCalls() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (!missedCalls.isEmpty()) {
+            MissedCall call = missedCalls.getFirst();
+            System.out.println("Missed Call from: " + call.getPhoneNumber());
+
+            System.out.println("Select an option: ");
+            System.out.println("1. Delete the call");
+            System.out.println("2. Display call details");
+            System.out.println("3. Exit");
+
+            int choice = scanner.nextInt();
+            scanner.nextLine();  // Consume newline
+
+            switch (choice) {
+                case 1:
+                    missedCalls.removeFirst();
+                    System.out.println("Call deleted.");
+                    break;
+                case 2:
+                    System.out.println(call);
+                    break;
+                case 3:
+                    return;
+                default:
+                    System.out.println("Invalid option. Please try again.");
+            }
+        }
+
+        System.out.println("No more missed calls.");
+    }
+
+    public void printAllCalls() {
         if (missedCalls.isEmpty()) {
             System.out.println("No missed calls.");
-            return;
-        }
-
-        int index = 1;
-        for (MissedCall call : missedCalls) {
-            System.out.println(index + ". " + call);
-            index++;
-        }
-
-        Scanner scanner = new Scanner(System.in);
-        System.out.print("Enter the number of the call to view details or delete (0 to exit): ");
-        int choice = scanner.nextInt();
-        if (choice > 0 && choice <= missedCalls.size()) {
-            MissedCall selectedCall = missedCalls.get(choice - 1);
-            System.out.println(selectedCall);
-            System.out.print("Do you want to delete this call? (yes/no): ");
-            String deleteChoice = scanner.next();
-            if (deleteChoice.equalsIgnoreCase("yes")) {
-                missedCalls.remove(choice - 1);
-                System.out.println("Call deleted.");
+        } else {
+            for (MissedCall call : missedCalls) {
+                System.out.println(call);
             }
         }
     }
@@ -77,6 +90,7 @@ class Phone {
 public class Main {
     public static void main(String[] args) {
         Phone phone = new Phone();
+
         phone.addMissedCall("1234567890", "John Doe");
         phone.addMissedCall("0987654321", "");
         phone.addMissedCall("5555555555", "Alice");
@@ -90,5 +104,8 @@ public class Main {
         phone.addMissedCall("9999999999", "");
 
         phone.displayMissedCalls();
+
+        System.out.println("All remaining missed calls:");
+        phone.printAllCalls();
     }
 }
