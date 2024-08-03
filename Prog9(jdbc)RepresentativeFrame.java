@@ -14,7 +14,6 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 
@@ -57,7 +56,7 @@ public class RepresentativeFrame extends JPanel {
 
         displayArea = new JTextArea(10, 40);
         displayArea.setEditable(false);
-        add(new JScrollPane(displayArea));
+        add(displayArea);
 
         submit.addActionListener(new ActionListener() {
             @Override
