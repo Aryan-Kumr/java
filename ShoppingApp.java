@@ -1,100 +1,127 @@
 import javax.swing.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.*;
+import java.awt.event.*;
+import java.util.HashMap;
 
-public class ShoppingApp {
-    private static JTextField itemIdField, quantityField, itemNameField, totalCostField;
+public class PurchaseApp extends JPanel {
+    private JLabel itemIdLabel, quantityLabel, itemNameLabel, totalCostLabel;
+    private JTextField itemIdField, quantityField, itemNameField, totalCostField;
+    private JButton calculateButton, printButton;
+    private HashMap<String, Item> items;
 
-    public static void main(String[] args) {
-        JFrame frame = new JFrame("Shopping App");
-        frame.setSize(400, 300);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setLayout(null);
+    public PurchaseApp() {
+        items = new HashMap<>();
+        items.put("101", new Item("Laptop", 1000));
+        items.put("102", new Item("Phone", 500));
+        items.put("103", new Item("Tablet", 300));
 
-        JLabel itemIdLabel = new JLabel("Item ID:");
-        itemIdLabel.setBounds(20, 20, 100, 30);
-        frame.add(itemIdLabel);
+        itemIdLabel = new JLabel("Item ID:");
+        quantityLabel = new JLabel("Quantity:");
+        itemNameLabel = new JLabel("Item Name:");
+        totalCostLabel = new JLabel("Total Cost:");
 
-        itemIdField = new JTextField();
-        itemIdField.setBounds(120, 20, 200, 30);
-        frame.add(itemIdField);
-
-        JLabel quantityLabel = new JLabel("Quantity:");
-        quantityLabel.setBounds(20, 60, 100, 30);
-        frame.add(quantityLabel);
-
-        quantityField = new JTextField();
-        quantityField.setBounds(120, 60, 200, 30);
-        frame.add(quantityField);
-
-        JButton calculateButton = new JButton("Calculate");
-        calculateButton.setBounds(20, 100, 120, 30);
-        frame.add(calculateButton);
-
-        JLabel itemNameLabel = new JLabel("Item Name:");
-        itemNameLabel.setBounds(20, 140, 100, 30);
-        frame.add(itemNameLabel);
-
-        itemNameField = new JTextField();
-        itemNameField.setBounds(120, 140, 200, 30);
+        itemIdField = new JTextField(10);
+        quantityField = new JTextField(10);
+        itemNameField = new JTextField(10);
         itemNameField.setEditable(false);
-        frame.add(itemNameField);
-
-        JLabel totalCostLabel = new JLabel("Total Cost:");
-        totalCostLabel.setBounds(20, 180, 100, 30);
-        frame.add(totalCostLabel);
-
-        totalCostField = new JTextField();
-        totalCostField.setBounds(120, 180, 200, 30);
+        totalCostField = new JTextField(10);
         totalCostField.setEditable(false);
-        frame.add(totalCostField);
 
-        JButton printButton = new JButton("Print");
-        printButton.setBounds(250, 100, 120, 30);
-        frame.add(printButton);
+        calculateButton = new JButton("Calculate");
+        printButton = new JButton("Print");
+
+        setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
+        add(itemIdLabel);
+        add(itemIdField);
+        add(quantityLabel);
+        add(quantityField);
+        add(itemNameLabel);
+        add(itemNameField);
+        add(totalCostLabel);
+        add(totalCostField);
+        add(calculateButton);
+        add(printButton);
 
         calculateButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
-                String itemId = itemIdField.getText();
-                int quantity = Integer.parseInt(quantityField.getText());
-                String itemName = "Item" + itemId; // Simple example
-                double itemPrice = 10.0; // Example price
-                double totalCost = itemPrice * quantity;
-
-                itemNameField.setText(itemName);
-                totalCostField.setText(String.valueOf(totalCost));
-
-                String[] options = {"10% Discount", "15% Discount", "20% Discount"};
-                int discountOption = JOptionPane.showOptionDialog(frame, 
-                        "Select Discount Type:", 
-                        "Discount Options", 
-                        JOptionPane.DEFAULT_OPTION, 
-                        JOptionPane.INFORMATION_MESSAGE, 
-                        null, options, options[0]);
-                
-                double discount = 0.0;
-                switch (discountOption) {
-                    case 0 -> discount = 0.1;
-                    case 1 -> discount = 0.15;
-                    case 2 -> discount = 0.2;
-                }
-
-                totalCost = totalCost * (1 - discount);
-                totalCostField.setText(String.valueOf(totalCost));
+                calculateTotalCost();
             }
         });
 
         printButton.addActionListener(new ActionListener() {
-            @Override
             public void actionPerformed(ActionEvent e) {
-                String itemName = itemNameField.getText();
-                String totalCost = totalCostField.getText();
-                JOptionPane.showMessageDialog(frame, "Item: " + itemName + "\nFinal Cost: " + totalCost, 
-                        "Final Bill", JOptionPane.INFORMATION_MESSAGE);
+                printFinalCost();
             }
         });
+    }
 
+    private void calculateTotalCost() {
+        String itemId = itemIdField.getText();
+        int quantity;
+        try {
+            quantity = Integer.parseInt(quantityField.getText());
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter a valid quantity.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        Item item = items.get(itemId);
+        if (item == null) {
+            JOptionPane.showMessageDialog(this, "Invalid Item ID.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        itemNameField.setText(item.getName());
+        double totalCost = item.getPrice() * quantity;
+        totalCostField.setText(String.valueOf(totalCost));
+    }
+
+    private void printFinalCost() {
+        String[] discountOptions = { "No Discount", "10% Discount", "20% Discount" };
+        int discountChoice = JOptionPane.showOptionDialog(
+                this, "Choose a discount:", "Discount Options",
+                JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, null,
+                discountOptions, discountOptions[0]);
+
+        if (discountChoice < 0) return;
+
+        double discount = 0;
+        if (discountChoice == 1) {
+            discount = 0.10;
+        } else if (discountChoice == 2) {
+            discount = 0.20;
+        }
+
+        double totalCost = Double.parseDouble(totalCostField.getText());
+        double finalCost = totalCost - (totalCost * discount);
+
+        JOptionPane.showMessageDialog(this, "Final Cost after discount: $" + finalCost, "Final Cost", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Purchase App");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(new PurchaseApp());
+        frame.pack();
         frame.setVisible(true);
+    }
+}
+
+class Item {
+    private String name;
+    private double price;
+
+    public Item(String name, double price) {
+        this.name = name;
+        this.price = price;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public double getPrice() {
+        return price;
     }
 }
