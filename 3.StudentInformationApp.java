@@ -3,84 +3,84 @@ import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 
-public class StudentInformationApp {
-    private JFrame frame;
+public class StudentInformationApp extends JPanel {
+    private JLabel nameLabel, usnLabel, ageLabel, addressLabel, sgpa1Label, sgpa2Label, sgpa3Label, sgpa4Label, categoryLabel;
     private JTextField nameField, usnField, ageField, addressField, sgpa1Field, sgpa2Field, sgpa3Field, sgpa4Field, categoryField;
     private JTextArea displayArea;
     private ArrayList<Student> students;
 
     public StudentInformationApp() {
         students = new ArrayList<>();
-        frame = new JFrame("Student Information");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(400, 600);
-        frame.setLayout(new GridLayout(12, 2));    //12 rows 2 colms
 
-        frame.add(new JLabel("Name:"));
-        nameField = new JTextField();
-        frame.add(nameField);
+        nameLabel = new JLabel("Name:");
+        usnLabel = new JLabel("USN:");
+        ageLabel = new JLabel("Age:");
+        addressLabel = new JLabel("Address:");
+        sgpa1Label = new JLabel("SGPA 1:");
+        sgpa2Label = new JLabel("SGPA 2:");
+        sgpa3Label = new JLabel("SGPA 3:");
+        sgpa4Label = new JLabel("SGPA 4:");
+        categoryLabel = new JLabel("Category:");
 
-        frame.add(new JLabel("USN:"));
-        usnField = new JTextField();
-        frame.add(usnField);
-
-        frame.add(new JLabel("Age:"));
-        ageField = new JTextField();
-        frame.add(ageField);
-
-        frame.add(new JLabel("Address:"));
-        addressField = new JTextField();
-        frame.add(addressField);
-
-        frame.add(new JLabel("SGPA 1:"));
-        sgpa1Field = new JTextField();
-        frame.add(sgpa1Field);
-
-        frame.add(new JLabel("SGPA 2:"));
-        sgpa2Field = new JTextField();
-        frame.add(sgpa2Field);
-
-        frame.add(new JLabel("SGPA 3:"));
-        sgpa3Field = new JTextField();
-        frame.add(sgpa3Field);
-
-        frame.add(new JLabel("SGPA 4:"));
-        sgpa4Field = new JTextField();
-        frame.add(sgpa4Field);
-
-        frame.add(new JLabel("Category:"));
-        categoryField = new JTextField();
-        frame.add(categoryField);
+        nameField = new JTextField(10);
+        usnField = new JTextField(10);
+        ageField = new JTextField(10);
+        addressField = new JTextField(10);
+        sgpa1Field = new JTextField(10);
+        sgpa2Field = new JTextField(10);
+        sgpa3Field = new JTextField(10);
+        sgpa4Field = new JTextField(10);
+        categoryField = new JTextField(10);
 
         JButton computeButton = new JButton("Compute CGPA");
+        JButton doneButton = new JButton("Done");
+        JButton displayButton = new JButton("Display Students");
+
+        setLayout(new GridLayout(12, 2)); // 12 rows, 2 columns
+
+        add(nameLabel);
+        add(nameField);
+        add(usnLabel);
+        add(usnField);
+        add(ageLabel);
+        add(ageField);
+        add(addressLabel);
+        add(addressField);
+        add(sgpa1Label);
+        add(sgpa1Field);
+        add(sgpa2Label);
+        add(sgpa2Field);
+        add(sgpa3Label);
+        add(sgpa3Field);
+        add(sgpa4Label);
+        add(sgpa4Field);
+        add(categoryLabel);
+        add(categoryField);
+        add(computeButton);
+        add(doneButton);
+        add(displayButton);
+
+        displayArea = new JTextArea(10, 40);
+        displayArea.setEditable(false);
+        add(new JScrollPane(displayArea));
+
         computeButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 computeCGPA();
             }
         });
-        frame.add(computeButton);
 
-        JButton doneButton = new JButton("Done");
         doneButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 addStudent();
             }
         });
-        frame.add(doneButton);
 
-        JButton displayButton = new JButton("Display Students");
         displayButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 displayStudents();
             }
         });
-        frame.add(displayButton);
-
-        displayArea = new JTextArea();
-        displayArea.setEditable(false);
-        frame.add(new JScrollPane(displayArea));
-
-        frame.setVisible(true);
     }
 
     private void computeCGPA() {
@@ -91,26 +91,30 @@ public class StudentInformationApp {
             double sgpa4 = Double.parseDouble(sgpa4Field.getText());
 
             double cgpa = (sgpa1 + sgpa2 + sgpa3 + sgpa4) / 4.0;
-            JOptionPane.showMessageDialog(frame, "CGPA: " + cgpa);
+            JOptionPane.showMessageDialog(this, "CGPA: " + cgpa);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(frame, "Please enter valid SGPA values.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter valid SGPA values.", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
     private void addStudent() {
-        String name = nameField.getText();
-        String usn = usnField.getText();
-        int age = Integer.parseInt(ageField.getText());
-        String address = addressField.getText();
-        double sgpa1 = Double.parseDouble(sgpa1Field.getText());
-        double sgpa2 = Double.parseDouble(sgpa2Field.getText());
-        double sgpa3 = Double.parseDouble(sgpa3Field.getText());
-        double sgpa4 = Double.parseDouble(sgpa4Field.getText());
-        String category = categoryField.getText();
+        try {
+            String name = nameField.getText();
+            String usn = usnField.getText();
+            int age = Integer.parseInt(ageField.getText());
+            String address = addressField.getText();
+            double sgpa1 = Double.parseDouble(sgpa1Field.getText());
+            double sgpa2 = Double.parseDouble(sgpa2Field.getText());
+            double sgpa3 = Double.parseDouble(sgpa3Field.getText());
+            double sgpa4 = Double.parseDouble(sgpa4Field.getText());
+            String category = categoryField.getText();
 
-        Student student = new Student(name, usn, age, address, sgpa1, sgpa2, sgpa3, sgpa4, category);
-        students.add(student);
-        JOptionPane.showMessageDialog(frame, "Student details added successfully.");
+            Student student = new Student(name, usn, age, address, sgpa1, sgpa2, sgpa3, sgpa4, category);
+            students.add(student);
+            JOptionPane.showMessageDialog(this, "Student details added successfully.");
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Please enter valid details.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
 
     private void displayStudents() {
@@ -122,11 +126,11 @@ public class StudentInformationApp {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new StudentInformationApp();
-            }
-        });
+        JFrame frame = new JFrame("Student Information");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.add(new StudentInformationApp());
+        frame.pack();
+        frame.setVisible(true);
     }
 }
 
